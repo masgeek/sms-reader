@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "sms")
-data class Sms(
+data class SmsEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val address: String,

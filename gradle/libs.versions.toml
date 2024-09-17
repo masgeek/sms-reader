@@ -30,6 +30,7 @@ androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-
 
 
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
