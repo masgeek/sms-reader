@@ -12,6 +12,7 @@ lifecycle = "2.8.5"
 room = "2.6.1"
 
 devtools = "2.0.10-1.0.24"
+debugDb = "1.0.7"
 
 junit = "4.13.2"
 espressoCore = "3.6.1"
@@ -40,6 +41,8 @@ coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-androi
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+
+android-debug-database = { group = "com.github.amitshekhariitbhu.Android-Debug-Database", name = "debug-db", version.ref = "debugDb" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

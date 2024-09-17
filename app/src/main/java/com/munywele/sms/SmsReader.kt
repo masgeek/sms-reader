@@ -1,8 +1,8 @@
-package com.munywele.sms.reader
+package com.munywele.sms
 
 import android.app.Application
-import com.munywele.sms.reader.database.SmsDatabase
-import com.munywele.sms.reader.database.repo.SmsRepository
+import com.munywele.sms.database.SmsDatabase
+import com.munywele.sms.database.repo.SmsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 

@@ -1,13 +1,13 @@
-package com.munywele.sms.reader.database
+package com.munywele.sms.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.munywele.sms.reader.database.dao.SmsDao
-import com.munywele.sms.reader.database.entities.SmsEntity
+import com.munywele.sms.database.dao.SmsDao
+import com.munywele.sms.database.entities.SmsEntity
 
-@Database(entities = [SmsEntity::class], version = 1)
+@Database(entities = [SmsEntity::class], version = 1, exportSchema = false)
 abstract class SmsDatabase : RoomDatabase() {
     abstract fun smsDao(): SmsDao
 

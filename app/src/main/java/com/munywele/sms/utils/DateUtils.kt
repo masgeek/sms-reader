@@ -1,4 +1,4 @@
-package com.munywele.sms.reader
+package com.munywele.sms.utils
 
 import java.time.Instant
 import java.time.ZoneId

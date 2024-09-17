@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.munywele.sms.reader"
+    namespace = "com.munywele.sms"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.munywele.sms.reader"
+        applicationId = "com.munywele.sms"
         minSdk = 34
         targetSdk = 34
         versionCode = 1
@@ -29,6 +29,10 @@ android {
                 "proguard-rules.pro"
             )
         }
+
+        debug {
+            resValue("string", "PORT_NUMBER", "9700")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -37,6 +41,8 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+
 }
 
 dependencies {
@@ -64,4 +70,6 @@ dependencies {
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    debugImplementation(libs.android.debug.database)
 }

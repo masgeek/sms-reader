@@ -1,11 +1,11 @@
-package com.munywele.sms.reader.view
+package com.munywele.sms.view
 
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.munywele.sms.reader.database.entities.SmsEntity
-import com.munywele.sms.reader.database.repo.SmsRepository
+import com.munywele.sms.database.entities.SmsEntity
+import com.munywele.sms.database.repo.SmsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
@@ -24,7 +24,7 @@ class SmsViewModel(private val repository: SmsRepository) : ViewModel() {
     fun getFilteredSms(
         sender: String,
         searchString: String,
-        minAmount: Int
+        minAmount: Double
     ): Flow<List<SmsEntity>> {
         return repository.getFilteredSms(sender, searchString, minAmount)
     }

@@ -1,12 +1,10 @@
-package com.munywele.sms.reader
+package com.munywele.sms
 
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import android.Manifest.permission
 import android.database.Cursor
 import android.net.Uri
@@ -15,11 +13,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.munywele.sms.reader.adapter.SmsAdapter
-import com.munywele.sms.reader.database.entities.SmsEntity
-import com.munywele.sms.reader.databinding.ActivityMainBinding
-import com.munywele.sms.reader.view.SmsViewModel
-import com.munywele.sms.reader.view.SmsViewModelFactory
+import com.munywele.sms.adapter.SmsAdapter
+import com.munywele.sms.database.entities.SmsEntity
+import com.munywele.sms.databinding.ActivityMainBinding
+import com.munywele.sms.utils.NumberUtils
+import com.munywele.sms.utils.StringUtils
+import com.munywele.sms.view.SmsViewModel
+import com.munywele.sms.view.SmsViewModelFactory
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -79,14 +79,20 @@ class MainActivity : AppCompatActivity() {
 
         cursor?.use {
             while (it.moveToNext()) {
-                val address = it.getString(it.getColumnIndexOrThrow("address"))
+                val send = it.getString(it.getColumnIndexOrThrow("address"))
                 val date = it.getLong(it.getColumnIndexOrThrow("date"))
                 val body = it.getString(it.getColumnIndexOrThrow("body"))
+                val amount = NumberUtils.extractFirstAmountAsInt(body)
+
+                val hash = StringUtils.generateMessageHash(body)
                 val smsEntity = SmsEntity(
-                    address = address,
+                    id = hash,
+                    sender = send,
                     body = body,
+                    amount = amount,
                     date = date
                 )
+
                 lifecycleScope.launch {
                     smsViewModel.insertSms(smsEntity)
                 }
@@ -99,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         // Define the parameters
         val sender = "MPESA"
         val searchString = "NAIROBI SMALL AND COMPANION ANIMAL HOSPITAL LIMITED"
-        val minAmount = 5000
+        val minAmount = 5000.00
 
         lifecycleScope.launch {
             smsViewModel.getFilteredSms(sender, searchString, minAmount).collect { smsList ->
