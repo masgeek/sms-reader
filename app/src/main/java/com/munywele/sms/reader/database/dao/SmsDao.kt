@@ -1,18 +1,19 @@
 package com.munywele.sms.reader.database.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.munywele.sms.reader.database.entities.SmsEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SmsDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(smsEntity: SmsEntity)
 
     @Query("SELECT * from sms order by date dESC")
-    fun getAllSms(): List<SmsEntity>
+    fun getAllSms(): Flow<List<SmsEntity>>
 
     @Query("DELETE FROM sms")
     suspend fun deleteAll()

@@ -14,12 +14,18 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.munywele.sms.reader.adapter.SmsAdapter
 import com.munywele.sms.reader.database.entities.SmsEntity
+import com.munywele.sms.reader.databinding.ActivityMainBinding
 import com.munywele.sms.reader.view.SmsViewModel
 import com.munywele.sms.reader.view.SmsViewModelFactory
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var smsAdapter: SmsAdapter
 
     private val smsViewModel: SmsViewModel by viewModels {
         SmsViewModelFactory((application as SmsReader).repository)
@@ -27,13 +33,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        binding = ActivityMainBinding.inflate(layoutInflater)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        setContentView(binding.root)
+
+        smsAdapter = SmsAdapter(emptyList())
+        binding.smsRecyclerView.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = smsAdapter
         }
 
         // Check for SMS permission
@@ -46,7 +53,10 @@ class MainActivity : AppCompatActivity() {
         } else {
             readSmsMessages()
         }
+
+        observeMessages()
     }
+
 
     private fun requestSmsPermission() {
         // Request permission to read SMS
@@ -84,5 +94,17 @@ class MainActivity : AppCompatActivity() {
         } ?: Toast.makeText(this, "No SMS found", Toast.LENGTH_SHORT).show()
     }
 
+    private fun observeMessages() {
 
+        // Define the parameters
+        val sender = "MPESA"
+        val searchString = "NAIROBI SMALL AND COMPANION ANIMAL HOSPITAL LIMITED"
+        val minAmount = 5000
+
+        lifecycleScope.launch {
+            smsViewModel.getFilteredSms(sender, searchString, minAmount).collect { smsList ->
+                smsAdapter.updateSmsList(newSmsList = smsList)
+            }
+        }
+    }
 }

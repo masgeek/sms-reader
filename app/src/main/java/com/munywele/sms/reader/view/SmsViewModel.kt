@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.munywele.sms.reader.database.entities.SmsEntity
 import com.munywele.sms.reader.database.repo.SmsRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class SmsViewModel(private val repository: SmsRepository) : ViewModel() {
@@ -15,12 +16,17 @@ class SmsViewModel(private val repository: SmsRepository) : ViewModel() {
         }
     }
 
-    fun getAllSms(): List<SmsEntity> {
-        var smsList = emptyList<SmsEntity>()
-        viewModelScope.launch {
-            smsList = repository.getAllSms()
-        }
-        return smsList
+    fun getAllSms(): Flow<List<SmsEntity>> {
+        return repository.getAllSms()
+    }
+
+
+    fun getFilteredSms(
+        sender: String,
+        searchString: String,
+        minAmount: Int
+    ): Flow<List<SmsEntity>> {
+        return repository.getFilteredSms(sender, searchString, minAmount)
     }
 }
 
