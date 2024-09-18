@@ -5,17 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.munywele.sms.database.entities.SmsEntity
 import com.munywele.sms.database.repo.SmsRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.switchMap
 import kotlinx.coroutines.launch
-import kotlin.math.min
 
 class SmsViewModel(private val repository: SmsRepository) : ViewModel() {
 
@@ -26,7 +20,7 @@ class SmsViewModel(private val repository: SmsRepository) : ViewModel() {
     private val _filteredSms = MutableLiveData<List<SmsEntity>>()
 //    val filteredSms: LiveData<List<SmsEntity>> get() = _filteredSms
 
-    var smsMessages: LiveData<List<SmsEntity>> = repository.getAllSms()
+    var allSms: LiveData<List<SmsEntity>> = repository.getAllSms()
 
     // LiveData for observing filtered SMS messages
     val filteredSms: LiveData<List<SmsEntity>> = filterParams.switchMap { params ->
@@ -43,6 +37,12 @@ class SmsViewModel(private val repository: SmsRepository) : ViewModel() {
         }
     }
 
+    fun insertAllSms(smsMessages: List<SmsEntity>) {
+        viewModelScope.launch {
+            repository.insertAllSms(smsMessages)
+        }
+    }
+
 
     fun filterMessages(
         sender: String? = null,
@@ -51,6 +51,7 @@ class SmsViewModel(private val repository: SmsRepository) : ViewModel() {
     ) {
         filterParams.value = FilterParams(sender, minAmount, searchString)
     }
+
 
     private data class FilterParams(
         val sender: String? = null,
