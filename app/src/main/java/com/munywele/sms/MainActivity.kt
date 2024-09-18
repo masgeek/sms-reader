@@ -2,7 +2,6 @@ package com.munywele.sms
 
 import android.content.pm.PackageManager
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import android.Manifest.permission
@@ -11,6 +10,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.munywele.sms.adapter.SmsAdapter
@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        enableEdgeToEdge()
+//        enableEdgeToEdge()
         setContentView(binding.root)
 
         smsAdapter = SmsAdapter(emptyList())
@@ -43,6 +43,21 @@ class MainActivity : AppCompatActivity() {
             adapter = smsAdapter
         }
 
+        binding.filterButton.setOnClickListener {
+            val minAmount = binding.filterAmountEditText.text.toString().toDoubleOrNull() ?: 0.0
+            val sender = binding.filterSenderEditText.text.toString()
+            val searchString = binding.filterContentEditText.text.toString()
+            smsViewModel.filterMessages(
+                minAmount = minAmount,
+                sender = sender,
+                searchString = searchString
+            )
+        }
+
+
+        smsViewModel.smsMessages.observe(this, Observer { messages ->
+            smsAdapter.submitList(messages)
+        })
         // Check for SMS permission
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -54,7 +69,7 @@ class MainActivity : AppCompatActivity() {
             readSmsMessages()
         }
 
-        observeMessages()
+//        observeMessages()
     }
 
 

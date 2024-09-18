@@ -7,8 +7,7 @@ import com.munywele.sms.utils.DateUtils
 import com.munywele.sms.database.entities.SmsEntity
 import com.munywele.sms.databinding.ItemSmsBinding
 
-class SmsAdapter(private var smsList: List<SmsEntity>) :
-    RecyclerView.Adapter<SmsAdapter.SmsViewHolder>() {
+class SmsAdapter:RecyclerView.Adapter<SmsAdapter.SmsViewHolder>() {
 
     inner class SmsViewHolder(private val binding: ItemSmsBinding) :
         RecyclerView.ViewHolder(binding.root) {

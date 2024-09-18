@@ -4,8 +4,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".SmsActivity">
 
+    <!-- Filter inputs -->
+    <EditText
+        android:id="@+id/filterSenderEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:hint="Sender Filter"
+        app:layout_constraintBottom_toTopOf="@id/filterAmountEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/filterAmountEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_16"
+        android:hint="Minimum Amount"
+        android:inputType="number"
+        app:layout_constraintBottom_toTopOf="@id/filterContentEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filterSenderEditText" />
+
+    <EditText
+        android:id="@+id/filterContentEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_16"
+        android:hint="Content Filter"
+        app:layout_constraintBottom_toTopOf="@id/filterButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filterAmountEditText" />
+
+    <Button
+        android:id="@+id/filterButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_16"
+        android:text="Apply Filters"
+        app:layout_constraintBottom_toTopOf="@id/sms_recycler_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filterContentEditText" />
+
+    <!-- RecyclerView for displaying SMS messages -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/sms_recycler_view"
         android:layout_width="0dp"
@@ -13,6 +60,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/filterButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
