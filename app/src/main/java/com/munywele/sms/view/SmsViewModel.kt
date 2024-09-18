@@ -2,6 +2,7 @@ package com.munywele.sms.view
 
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
@@ -12,7 +13,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class SmsViewModel(private val repository: SmsRepository) : ViewModel() {
-    var smsMessages: LiveData<List<SmsEntity>> = repository.getAllSms().asLiveData()
+    //    var smsMessages: LiveData<List<SmsEntity>> = repository.getAllSms().asLiveData()
+    private val _smsMessages = MutableLiveData<List<SmsEntity>>()
+    var smsMessages: LiveData<List<SmsEntity>> = _smsMessages
 
 
     fun insertSms(sms: SmsEntity) {
@@ -21,24 +24,13 @@ class SmsViewModel(private val repository: SmsRepository) : ViewModel() {
         }
     }
 
-    fun getAllSms(): Flow<List<SmsEntity>> {
-        return repository.getAllSms()
-    }
-
-
-    fun getFilteredSms(
-        sender: String,
-        searchString: String,
-        minAmount: Double
-    ): Flow<List<SmsEntity>> {
-        return repository.getFilteredSms(sender, searchString, minAmount)
-    }
 
     fun filterMessages(minAmount: Double, sender: String, searchString: String) {
         repository.getFilteredSms(sender, searchString, minAmount).asLiveData().let {
             smsMessages = it
         }
     }
+
 }
 
 class SmsViewModelFactory(private val repository: SmsRepository) : ViewModelProvider.Factory {

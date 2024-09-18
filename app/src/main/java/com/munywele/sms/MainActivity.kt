@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 //        enableEdgeToEdge()
         setContentView(binding.root)
 
-        smsAdapter = SmsAdapter(emptyList())
+        smsAdapter = SmsAdapter()
         binding.smsRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = smsAdapter
@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
                     sender = send,
                     body = body,
                     amount = amount,
-                    date = date
+                    timestamp = date
                 )
 
                 lifecycleScope.launch {
@@ -115,17 +115,17 @@ class MainActivity : AppCompatActivity() {
         } ?: Toast.makeText(this, "No SMS found", Toast.LENGTH_SHORT).show()
     }
 
-    private fun observeMessages() {
-
-        // Define the parameters
-        val sender = "MPESA"
-        val searchString = "NAIROBI SMALL AND COMPANION ANIMAL HOSPITAL LIMITED"
-        val minAmount = 5000.00
-
-        lifecycleScope.launch {
-            smsViewModel.getFilteredSms(sender, searchString, minAmount).collect { smsList ->
-                smsAdapter.updateSmsList(newSmsList = smsList)
-            }
-        }
-    }
+//    private fun observeMessages() {
+//
+//        // Define the parameters
+//        val sender = "MPESA"
+//        val searchString = "NAIROBI SMALL AND COMPANION ANIMAL HOSPITAL LIMITED"
+//        val minAmount = 5000.00
+//
+//        lifecycleScope.launch {
+//            smsViewModel.getFilteredSms(sender, searchString, minAmount).collect { smsList ->
+//                smsAdapter.updateSmsList(newSmsList = smsList)
+//            }
+//        }
+//    }
 }

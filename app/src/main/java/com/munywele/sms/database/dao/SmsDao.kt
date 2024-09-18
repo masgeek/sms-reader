@@ -12,10 +12,10 @@ interface SmsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(smsEntity: SmsEntity)
 
-    @Query("SELECT * from sms order by date dESC")
+    @Query("SELECT * from sms order by timestamp DESC")
     fun getAllSms(): Flow<List<SmsEntity>>
 
-    @Query("SELECT * FROM sms WHERE sender=:sender AND amount >= :minAmount AND body LIKE '%' || :content || '%' ORDER BY date DESC")
+    @Query("SELECT * FROM sms WHERE sender=:sender AND amount >= :minAmount AND body LIKE '%' || :content || '%' ORDER BY timestamp DESC")
     fun getFilteredSms(
         sender: String,
         minAmount: Double,
