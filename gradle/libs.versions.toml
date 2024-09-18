@@ -9,7 +9,7 @@ constraintlayout = "2.1.4"
 cardView = "1.0.0"
 recyclerview = "1.3.2"
 coroutines = "1.7.3"
-lifecycle = "2.8.5"
+lifecycle = "2.8.6"
 room = "2.6.1"
 
 devtools = "2.0.10-1.0.24"
