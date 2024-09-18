@@ -26,13 +26,16 @@ import kotlinx.coroutines.withContext
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var smsAdapter: SmsAdapter
 
     private val ioDispatcher: CoroutineDispatcher
         get() = (application as SmsReader).ioDispatcher
 
     private val smsViewModel: SmsViewModel by viewModels {
         SmsViewModelFactory((application as SmsReader).repository)
+    }
+    private val smsAdapter = SmsAdapter { sms ->
+        // Handle item click
+        Toast.makeText(this, "Clicked: ${sms.sender}", Toast.LENGTH_SHORT).show()
     }
 
     private val smsPermissionLauncher = registerForActivityResult(
@@ -58,10 +61,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        smsAdapter = SmsAdapter()
         binding.smsRecyclerView.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = smsAdapter
+            layoutManager = LinearLayoutManager(this@MainActivity)
         }
     }
 
@@ -82,10 +84,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun observeSmsMessages() {
         smsViewModel.allSms.observe(this) { smsList ->
-            smsAdapter.updateSmsList(smsList)
+            smsAdapter.submitList(smsList)
         }
         smsViewModel.filteredSms.observe(this) { messages ->
-            smsAdapter.updateSmsList(messages)
+            smsAdapter.submitList(messages)
         }
     }
 

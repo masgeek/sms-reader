@@ -10,14 +10,8 @@ import com.munywele.sms.database.entities.SmsEntity
 import com.munywele.sms.databinding.ItemSmsBinding
 
 
-class SmsAdapter : RecyclerView.Adapter<SmsAdapter.SmsViewHolder>() {
-
-    private var smsList: List<SmsEntity> = listOf()
-
-    fun updateSmsList(newList: List<SmsEntity>) {
-        smsList = newList
-        notifyDataSetChanged()  // Update UI with the new list
-    }
+class SmsAdapter(private val onItemClick: (SmsEntity) -> Unit) :
+    ListAdapter<SmsEntity, SmsAdapter.SmsViewHolder>(SmsDiffCallback()) {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SmsViewHolder {
@@ -25,22 +19,46 @@ class SmsAdapter : RecyclerView.Adapter<SmsAdapter.SmsViewHolder>() {
         return SmsViewHolder(binding = binding)
     }
 
-    override fun getItemCount(): Int = smsList.size
-
-
     override fun onBindViewHolder(holder: SmsViewHolder, position: Int) {
-        val sms = smsList[position]
+        val sms = getItem(position)
         holder.bind(sms)
     }
 
     inner class SmsViewHolder(private val binding: ItemSmsBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.root.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClick(getItem(position))
+                }
+            }
+        }
+
         fun bind(sms: SmsEntity) {
-            val dateString = DateUtils.formatDateFromTimestamp(sms.timestamp)
-            binding.smsSender.text = sms.sender
-            binding.smsDate.text = dateString
-            binding.smsBody.text = sms.body
+            binding.apply {
+                val dateString = DateUtils.formatDateFromTimestamp(sms.timestamp)
+                smsSender.text = sms.sender
+                smsDate.text = dateString
+                smsBody.text = sms.body
+
+                // Highlight messages with high amounts
+                root.setBackgroundResource(
+                    if (sms.amount > 1000) android.R.color.holo_red_light
+                    else android.R.color.transparent
+                )
+            }
         }
     }
 
+    class SmsDiffCallback : DiffUtil.ItemCallback<SmsEntity>() {
+        override fun areItemsTheSame(oldItem: SmsEntity, newItem: SmsEntity): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: SmsEntity, newItem: SmsEntity): Boolean {
+            return oldItem == newItem
+        }
+    }
 }
