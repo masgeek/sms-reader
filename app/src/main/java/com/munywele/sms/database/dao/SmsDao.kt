@@ -13,16 +13,23 @@ interface SmsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(smsEntity: SmsEntity)
 
-    @Query("SELECT * from sms order by timestamp DESC")
+    @Query("SELECT * FROM sms ORDER BY timestamp DESC")
     fun getAllSms(): LiveData<List<SmsEntity>>
 
-    @Query("SELECT * FROM sms WHERE sender=:sender AND amount >= :minAmount AND body LIKE '%' || :content || '%' ORDER BY timestamp DESC")
+    @Query(
+        """
+        SELECT * FROM sms
+        WHERE (:sender IS NULL OR sender LIKE :sender)
+          AND (:minAmount IS NULL OR amount >= :minAmount)
+          AND (:content IS NULL OR body LIKE '%' || :content || '%')
+        ORDER BY timestamp DESC
+    """
+    )
     fun getFilteredSms(
-        sender: String,
-        minAmount: Double,
-        content: String
+        sender: String? = null,
+        minAmount: Double? = null,
+        content: String? = null
     ): LiveData<List<SmsEntity>>
-
 
     @Query("DELETE FROM sms")
     suspend fun deleteAll()

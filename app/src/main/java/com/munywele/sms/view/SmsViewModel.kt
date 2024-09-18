@@ -11,6 +11,7 @@ import com.munywele.sms.database.entities.SmsEntity
 import com.munywele.sms.database.repo.SmsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlin.math.min
 
 class SmsViewModel(private val repository: SmsRepository) : ViewModel() {
 
@@ -27,11 +28,24 @@ class SmsViewModel(private val repository: SmsRepository) : ViewModel() {
     }
 
 
-    fun filterMessages(minAmount: Double, sender: String, searchString: String) {
-        repository.getFilteredSms(sender, searchString, minAmount).observeForever { filteredList ->
-            _filteredSms.postValue(filteredList)
+    fun filterMessages(
+        sender: String? = null,
+        minAmount: Double? = null,
+        searchString: String? = null
+    ) {
+        repository.getFilteredSms(
+            sender = sender?.let { "%$it%" },
+            minAmount = minAmount,
+            searchString = searchString?.let { "%$it%" }).observeForever { filteredList ->
+            _filteredSms.postValue(filteredList)  // Use postValue for background updates
         }
     }
+
+//    fun filterMessages(minAmount: Double, sender: String, searchString: String) {
+//        repository.getFilteredSms(sender, searchString, minAmount).observeForever { filteredList ->
+//            _filteredSms.postValue(filteredList)
+//        }
+//    }
 
 }
 

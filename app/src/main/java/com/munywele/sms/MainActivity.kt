@@ -44,9 +44,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.filterButton.setOnClickListener {
-            val minAmount = binding.filterAmountEditText.text.toString().toDoubleOrNull() ?: 0.0
-            val sender = binding.filterSenderEditText.text.toString()
-            val searchString = binding.filterContentEditText.text.toString()
+            val minAmount = binding.filterAmountEditText.text.toString().toDoubleOrNull()
+            val sender = binding.filterSenderEditText.text.toString().takeIf { it.isNotBlank() }
+            val searchString = binding.filterContentEditText.text.toString().takeIf { it.isNotBlank() }
+
             smsViewModel.filterMessages(
                 minAmount = minAmount,
                 sender = sender,
@@ -54,9 +55,14 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        smsViewModel.smsMessages.observe(this, Observer { messages ->
+        // Observe all SMS messages
+        smsViewModel.smsMessages.observe(this) { smsList ->
+            smsAdapter.updateSmsList(smsList)
+        }
+        // Observe filtered SMS messages
+        smsViewModel.filteredSms.observe(this) { messages ->
             smsAdapter.updateSmsList(messages)
-        })
+        }
 
         // Check for SMS permission
         if (ContextCompat.checkSelfPermission(
