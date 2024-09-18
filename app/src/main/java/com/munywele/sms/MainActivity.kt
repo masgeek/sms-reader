@@ -19,7 +19,7 @@ import com.munywele.sms.utils.NumberUtils
 import com.munywele.sms.utils.StringUtils
 import com.munywele.sms.view.SmsViewModel
 import com.munywele.sms.view.SmsViewModelFactory
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -27,6 +27,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var smsAdapter: SmsAdapter
+
+    private val ioDispatcher: CoroutineDispatcher
+        get() = (application as SmsReader).ioDispatcher
 
     private val smsViewModel: SmsViewModel by viewModels {
         SmsViewModelFactory((application as SmsReader).repository)
@@ -112,14 +115,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun readSmsMessages() {
         lifecycleScope.launch {
-            val smsMessages = withContext(Dispatchers.IO) {
+            val smsMessages = withContext(ioDispatcher) {
                 fetchSmsFromContentProvider()
             }
             if (smsMessages.isNotEmpty()) {
                 smsViewModel.insertAllSms(smsMessages)
-                Toast.makeText(this@MainActivity, "${smsMessages.size} SMS messages imported", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@MainActivity,
+                    "${smsMessages.size} SMS messages imported",
+                    Toast.LENGTH_SHORT
+                ).show()
             } else {
-                Toast.makeText(this@MainActivity, "No new SMS messages found", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "No new SMS messages found", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }

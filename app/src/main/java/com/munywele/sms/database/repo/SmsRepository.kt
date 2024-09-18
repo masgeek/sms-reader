@@ -4,12 +4,11 @@ import androidx.lifecycle.LiveData
 import com.munywele.sms.database.dao.SmsDao
 import com.munywele.sms.database.entities.SmsEntity
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class SmsRepository(
     private val smsDao: SmsDao,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val ioDispatcher: CoroutineDispatcher
 ) {
     fun getAllSms(): LiveData<List<SmsEntity>> = smsDao.getAllSms()
 
@@ -23,27 +22,27 @@ class SmsRepository(
         minAmount = minAmount
     )
 
-    suspend fun insertSms(sms: SmsEntity) = withContext(dispatcher) {
+    suspend fun insertSms(sms: SmsEntity) = withContext(ioDispatcher) {
         smsDao.insert(sms)
     }
 
-    suspend fun insertAllSms(smsList: List<SmsEntity>) = withContext(dispatcher) {
+    suspend fun insertAllSms(smsList: List<SmsEntity>) = withContext(ioDispatcher) {
         smsDao.insertAll(smsList)
     }
 
-    suspend fun updateSms(sms: SmsEntity) = withContext(dispatcher) {
+    suspend fun updateSms(sms: SmsEntity) = withContext(ioDispatcher) {
         smsDao.update(sms)
     }
 
-    suspend fun deleteSms(sms: SmsEntity) = withContext(dispatcher) {
+    suspend fun deleteSms(sms: SmsEntity) = withContext(ioDispatcher) {
         smsDao.delete(sms)
     }
 
-    suspend fun deleteAllSms() = withContext(dispatcher) {
+    suspend fun deleteAllSms() = withContext(ioDispatcher) {
         smsDao.deleteAll()
     }
 
-    suspend fun getSmsCount(): Int = withContext(dispatcher) {
+    suspend fun getSmsCount(): Int = withContext(ioDispatcher) {
         smsDao.getSmsCount()
     }
 }
