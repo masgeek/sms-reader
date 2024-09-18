@@ -54,10 +54,10 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-
         smsViewModel.smsMessages.observe(this, Observer { messages ->
-            smsAdapter.submitList(messages)
+            smsAdapter.updateSmsList(messages)
         })
+
         // Check for SMS permission
         if (ContextCompat.checkSelfPermission(
                 this,

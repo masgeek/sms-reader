@@ -1,5 +1,6 @@
 package com.munywele.sms.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -13,14 +14,14 @@ interface SmsDao {
     suspend fun insert(smsEntity: SmsEntity)
 
     @Query("SELECT * from sms order by timestamp DESC")
-    fun getAllSms(): Flow<List<SmsEntity>>
+    fun getAllSms(): LiveData<List<SmsEntity>>
 
     @Query("SELECT * FROM sms WHERE sender=:sender AND amount >= :minAmount AND body LIKE '%' || :content || '%' ORDER BY timestamp DESC")
     fun getFilteredSms(
         sender: String,
         minAmount: Double,
         content: String
-    ): Flow<List<SmsEntity>>
+    ): LiveData<List<SmsEntity>>
 
 
     @Query("DELETE FROM sms")

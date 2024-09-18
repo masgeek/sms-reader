@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardElevation="4dp"
-    app:cardCornerRadius="8dp">
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -13,7 +13,7 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/sms_address"
+            android:id="@+id/sms_sender"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Sender Address"
@@ -29,7 +29,7 @@
             android:text="Date"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/sms_address" />
+            app:layout_constraintTop_toBottomOf="@id/sms_sender" />
 
         <TextView
             android:id="@+id/sms_body"

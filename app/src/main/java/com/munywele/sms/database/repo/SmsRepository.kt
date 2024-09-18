@@ -1,5 +1,6 @@
 package com.munywele.sms.database.repo
 
+import androidx.lifecycle.LiveData
 import com.munywele.sms.database.dao.SmsDao
 import com.munywele.sms.database.entities.SmsEntity
 import kotlinx.coroutines.flow.Flow
@@ -10,7 +11,7 @@ class SmsRepository(private val smsDao: SmsDao) {
         smsDao.insert(sms)
     }
 
-    fun getAllSms(): Flow<List<SmsEntity>> {
+    fun getAllSms(): LiveData<List<SmsEntity>> {
         return smsDao.getAllSms()
     }
 
@@ -18,7 +19,7 @@ class SmsRepository(private val smsDao: SmsDao) {
         sender: String,
         searchString: String,
         minAmount: Double
-    ): Flow<List<SmsEntity>> {
+    ): LiveData<List<SmsEntity>> {
         return smsDao.getFilteredSms(
             sender = sender,
             minAmount = minAmount,

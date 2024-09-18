@@ -13,10 +13,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class SmsViewModel(private val repository: SmsRepository) : ViewModel() {
-    //    var smsMessages: LiveData<List<SmsEntity>> = repository.getAllSms().asLiveData()
-    private val _smsMessages = MutableLiveData<List<SmsEntity>>()
-    var smsMessages: LiveData<List<SmsEntity>> = _smsMessages
 
+    // LiveData for observing filtered SMS messages
+    private val _filteredSms = MutableLiveData<List<SmsEntity>>()
+    val filteredSms: LiveData<List<SmsEntity>> get() = _filteredSms
+
+    var smsMessages: LiveData<List<SmsEntity>> = repository.getAllSms()
 
     fun insertSms(sms: SmsEntity) {
         viewModelScope.launch {
@@ -26,8 +28,8 @@ class SmsViewModel(private val repository: SmsRepository) : ViewModel() {
 
 
     fun filterMessages(minAmount: Double, sender: String, searchString: String) {
-        repository.getFilteredSms(sender, searchString, minAmount).asLiveData().let {
-            smsMessages = it
+        repository.getFilteredSms(sender, searchString, minAmount).observeForever { filteredList ->
+            _filteredSms.postValue(filteredList)
         }
     }
 
