@@ -5,11 +5,14 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.munywele.sms.adapter.SmsAdapter
@@ -20,12 +23,20 @@ import com.munywele.sms.utils.StringUtils
 import com.munywele.sms.view.SmsViewModel
 import com.munywele.sms.view.SmsViewModelFactory
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    private var debounceJob: Job? = null
+    private val debounceDelay = 300L // 300 milliseconds debounce delay
+
 
     private val ioDispatcher: CoroutineDispatcher
         get() = (application as SmsReader).ioDispatcher
@@ -36,6 +47,19 @@ class MainActivity : AppCompatActivity() {
     private val smsAdapter = SmsAdapter { sms ->
         // Handle item click
         Toast.makeText(this, "Clicked: ${sms.sender}", Toast.LENGTH_SHORT).show()
+    }
+
+    private val filterTextWatcher = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            // Debounce or delay can be implemented here if needed
+            debounceFilterMessages()
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+            /*Not implemented*/
+        }
     }
 
     private val smsPermissionLauncher = registerForActivityResult(
@@ -56,6 +80,7 @@ class MainActivity : AppCompatActivity() {
 
         setupRecyclerView()
         setupFilterButton()
+        setupFilterFields()
         observeSmsMessages()
         checkSmsPermission()
     }
@@ -67,19 +92,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupFilterFields() {
+        binding.filterAmountEditText.addTextChangedListener(filterTextWatcher)
+        binding.filterSenderEditText.addTextChangedListener(filterTextWatcher)
+        binding.filterContentEditText.addTextChangedListener(filterTextWatcher)
+    }
+
     private fun setupFilterButton() {
         binding.filterButton.setOnClickListener {
-            val minAmount = binding.filterAmountEditText.text.toString().toDoubleOrNull()
-            val sender = binding.filterSenderEditText.text.toString().takeIf { it.isNotBlank() }
-            val searchString =
-                binding.filterContentEditText.text.toString().takeIf { it.isNotBlank() }
-
-            smsViewModel.filterMessages(
-                minAmount = minAmount,
-                sender = sender,
-                searchString = searchString
-            )
+            filterMessages()
         }
+    }
+
+    private fun debounceFilterMessages() {
+        debounceJob?.cancel() // Cancel the previous job if it's still running
+        debounceJob = CoroutineScope(Dispatchers.Main).launch {
+            delay(debounceDelay) // Wait for the debounce delay
+            filterMessages() // Call filterMessages after the delay
+        }
+    }
+
+    private fun filterMessages() {
+        val minAmount = binding.filterAmountEditText.text.toString().toDoubleOrNull()
+        val sender = binding.filterSenderEditText.text.toString().trim()
+        val searchString = binding.filterContentEditText.text.toString().trim()
+
+        smsViewModel.filterMessages(
+            minAmount = minAmount,
+            sender = sender,
+            searchString = searchString
+        )
     }
 
     private fun observeSmsMessages() {

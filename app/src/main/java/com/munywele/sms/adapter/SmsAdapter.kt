@@ -29,7 +29,7 @@ class SmsAdapter(private val onItemClick: (SmsEntity) -> Unit) :
 
         init {
             binding.root.setOnClickListener {
-                val position = bindingAdapterPosition
+                val position = absoluteAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     onItemClick(getItem(position))
                 }
@@ -44,9 +44,9 @@ class SmsAdapter(private val onItemClick: (SmsEntity) -> Unit) :
                 smsBody.text = sms.body
 
                 // Highlight messages with high amounts
-                root.setBackgroundResource(
-                    if (sms.amount > 1000) android.R.color.holo_red_light
-                    else android.R.color.transparent
+                messageLayout.setBackgroundResource(
+                    if (sms.amount > 1000) android.R.color.holo_blue_bright
+                    else android.R.color.holo_orange_dark
                 )
             }
         }
