@@ -5,18 +5,31 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.munywele.sms.database.entities.SmsEntity
 import com.munywele.sms.database.repo.SmsRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class SmsViewModel(private val repository: SmsRepository) : ViewModel() {
-    //    var smsMessages: LiveData<List<SmsEntity>> = repository.getAllSms().asLiveData()
-    private val _smsMessages = MutableLiveData<List<SmsEntity>>()
-    var smsMessages: LiveData<List<SmsEntity>> = _smsMessages
 
+    // MutableStateFlow for filter parameters
+    private val filterParams = MutableLiveData(FilterParams())
+
+    // LiveData for observing filtered SMS messages
+    private val _filteredSms = MutableLiveData<List<SmsEntity>>()
+//    val filteredSms: LiveData<List<SmsEntity>> get() = _filteredSms
+
+    var allSms: LiveData<List<SmsEntity>> = repository.getAllSms()
+
+    // LiveData for observing filtered SMS messages
+    val filteredSms: LiveData<List<SmsEntity>> = filterParams.switchMap { params ->
+        repository.getFilteredSms(
+            sender = params.sender?.let { "%$it%" },
+            minAmount = params.minAmount,
+            searchString = params.searchString?.let { "%$it%" }
+        )
+    }
 
     fun insertSms(sms: SmsEntity) {
         viewModelScope.launch {
@@ -24,13 +37,27 @@ class SmsViewModel(private val repository: SmsRepository) : ViewModel() {
         }
     }
 
-
-    fun filterMessages(minAmount: Double, sender: String, searchString: String) {
-        repository.getFilteredSms(sender, searchString, minAmount).asLiveData().let {
-            smsMessages = it
+    fun insertAllSms(smsMessages: List<SmsEntity>) {
+        viewModelScope.launch {
+            repository.insertAllSms(smsMessages)
         }
     }
 
+
+    fun filterMessages(
+        sender: String? = null,
+        minAmount: Double? = null,
+        searchString: String? = null
+    ) {
+        filterParams.value = FilterParams(sender, minAmount, searchString)
+    }
+
+
+    private data class FilterParams(
+        val sender: String? = null,
+        val minAmount: Double? = null,
+        val searchString: String? = null
+    )
 }
 
 class SmsViewModelFactory(private val repository: SmsRepository) : ViewModelProvider.Factory {

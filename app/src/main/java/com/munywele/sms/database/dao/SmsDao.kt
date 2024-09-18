@@ -1,9 +1,12 @@
 package com.munywele.sms.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.munywele.sms.database.entities.SmsEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -12,17 +15,38 @@ interface SmsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(smsEntity: SmsEntity)
 
-    @Query("SELECT * from sms order by timestamp DESC")
-    fun getAllSms(): Flow<List<SmsEntity>>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(smsList: List<SmsEntity>)
 
-    @Query("SELECT * FROM sms WHERE sender=:sender AND amount >= :minAmount AND body LIKE '%' || :content || '%' ORDER BY timestamp DESC")
+    @Update
+    suspend fun update(sms: SmsEntity)
+
+    @Query("SELECT * FROM sms ORDER BY timestamp DESC")
+    fun getAllSms(): LiveData<List<SmsEntity>>
+
+    @Query(
+        """
+        SELECT * FROM sms
+        WHERE (:sender IS NULL OR sender LIKE :sender)
+          AND (:minAmount IS NULL OR amount >= :minAmount)
+          AND (:content IS NULL OR body LIKE '%' || :content || '%')
+        ORDER BY timestamp DESC
+    """
+    )
     fun getFilteredSms(
-        sender: String,
-        minAmount: Double,
-        content: String
-    ): Flow<List<SmsEntity>>
+        sender: String? = null,
+        minAmount: Double? = null,
+        content: String? = null
+    ): LiveData<List<SmsEntity>>
+
+
+    @Delete
+    suspend fun delete(sms: SmsEntity)
 
 
     @Query("DELETE FROM sms")
     suspend fun deleteAll()
+
+    @Query("SELECT COUNT(*) FROM sms")
+    suspend fun getSmsCount(): Int
 }

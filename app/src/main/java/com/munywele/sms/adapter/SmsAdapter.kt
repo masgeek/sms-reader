@@ -10,17 +10,9 @@ import com.munywele.sms.database.entities.SmsEntity
 import com.munywele.sms.databinding.ItemSmsBinding
 
 
-class SmsAdapter : ListAdapter<SmsEntity, SmsAdapter.SmsViewHolder>(SmsDiffCallback()) {
+class SmsAdapter(private val onItemClick: (SmsEntity) -> Unit) :
+    ListAdapter<SmsEntity, SmsAdapter.SmsViewHolder>(SmsDiffCallback()) {
 
-    inner class SmsViewHolder(private val binding: ItemSmsBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(sms: SmsEntity) {
-            val dateString = DateUtils.formatDateFromTimestamp(sms.timestamp)
-            binding.smsAddress.text = sms.sender
-            binding.smsDate.text = dateString
-            binding.smsBody.text = sms.body
-        }
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SmsViewHolder {
         val binding = ItemSmsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -32,6 +24,33 @@ class SmsAdapter : ListAdapter<SmsEntity, SmsAdapter.SmsViewHolder>(SmsDiffCallb
         holder.bind(sms)
     }
 
+    inner class SmsViewHolder(private val binding: ItemSmsBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.root.setOnClickListener {
+                val position = absoluteAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClick(getItem(position))
+                }
+            }
+        }
+
+        fun bind(sms: SmsEntity) {
+            binding.apply {
+                val dateString = DateUtils.formatDateFromTimestamp(sms.timestamp)
+                smsSender.text = sms.sender
+                smsDate.text = dateString
+                smsBody.text = sms.body
+
+                // Highlight messages with high amounts
+                messageLayout.setBackgroundResource(
+                    if (sms.amount > 1000) android.R.color.holo_blue_bright
+                    else android.R.color.holo_orange_dark
+                )
+            }
+        }
+    }
 
     class SmsDiffCallback : DiffUtil.ItemCallback<SmsEntity>() {
         override fun areItemsTheSame(oldItem: SmsEntity, newItem: SmsEntity): Boolean {
