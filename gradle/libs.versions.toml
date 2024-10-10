@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.0.10"
+kotlin = "2.0.21"
 agp = "8.6.1"
 coreKtx = "1.13.1"
 appcompat = "1.7.0"
