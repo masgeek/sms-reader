@@ -12,7 +12,7 @@ coroutines = "1.7.3"
 lifecycle = "2.8.5"
 room = "2.6.1"
 
-devtools = "2.0.10-1.0.24"
+devtools = "2.0.21-1.0.25"
 debugDb = "1.0.7"
 
 junit = "4.13.2"
